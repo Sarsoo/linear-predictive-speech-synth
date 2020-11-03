@@ -3,12 +3,10 @@
 %% Load wav and run through autocorr from econometrics toolbox
 %% Used max range of m lags calculated from sample frequency
 
-close all;
-clear all;
+close all;clear all;clc;
 
 [y, Fs] = audioread('samples/hood_m.wav');
-sample_size = size(y);
-L = sample_size(1); % number of samples
+L = length(y); % number of samples
 
 f0 = 60; % low-pitched male speech
 %f0 = 600; % children

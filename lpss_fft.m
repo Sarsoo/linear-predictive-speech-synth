@@ -3,12 +3,10 @@
 %% Load wav and plot in frequency domain using fft
 %% Construct proper one-sided function for display
 
-close all;
-clear all;
+close all;clear all;clc;
 
 [y, Fs] = audioread('samples/hood_m.wav');
-sample_size = size(y);
-L = sample_size(1); % number of samples
+L = length(y); % number of samples
 
 % PLOT TIME DOMAIN
 figure(1);

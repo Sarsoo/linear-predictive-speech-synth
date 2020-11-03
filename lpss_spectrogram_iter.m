@@ -2,18 +2,16 @@
 %%
 %% Load wav and plot spectrogram for iterating window sizes
 
-close all;
-clear all;
+close all;clear all;clc;
 
 %WINDOW_NUMBER = 20;
 
 % matrix by audio channel and sample frequency
 [y, Fs] = audioread('samples/hood_m.wav');
-sample_size = size(y);
 
 for WINDOW_NUMBER=1:50
 
-    window_size = round(sample_size(1) / ((WINDOW_NUMBER + 1)/2));
+    window_size = round(length(y) / ((WINDOW_NUMBER + 1)/2));
 
     freqRes = Fs / window_size;
     timeRes = window_size / Fs;
