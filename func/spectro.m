@@ -1,6 +1,6 @@
 function spectro(signal, sample_frequency, windows, overlap_interval)
 
-sample_overlap = (overlap_interval / 1000) * sample_frequency;
+sample_overlap = ms_to_samples(overlap_interval, sample_frequency);
 
 sample_size = size(signal);
 %window_size = round(sample_size(1) / ((windows + 1)/2))

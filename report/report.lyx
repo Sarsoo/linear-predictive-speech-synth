@@ -9,6 +9,10 @@
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
 \pagenumbering{roman}
+
+\usepackage{color}
+
+\definecolor{commentgreen}{RGB}{0,94,11}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -257,6 +261,53 @@ setcounter{page}{1}
 Introduction
 \end_layout
 
+\begin_layout Section
+Brief
+\end_layout
+
+\begin_layout Standard
+The aim of this report is to demonstrate how digital signal processing technique
+s can be used to analyse, model and synthesise speech.
+ The task will take will be considered as two areas of concern, that of
+ modelling and synthesis.
+\end_layout
+
+\begin_layout Standard
+The modelling stage will utilise Linear Predictive Coding and the source-filter
+ model of speech to construct a filter that acts similarly to the vocal
+ tract's effect on sound produced by the vocal chords.
+ Comparisons of the frequency response for both the estimated filter and
+ the original sound will be presented, the effect of different filter orders
+ will also be demonstrated.
+ Relevant parameters of the original vowel speech segment will be presented
+ including the fundamental frequency and further formant frequencies.
+\end_layout
+
+\begin_layout Standard
+The synthesis stage will complete the source-filter model of speech by creating
+ a suitable periodic sound source to be modulated by the previous filter.
+ With a complete source-filter model, artificial vowel sounds will be synthesise
+d and analysed.
+ Subjective assessments will be made as to the differences between the original
+ sound and the final product of the model when system parameters are varied.
+\end_layout
+
+\begin_layout Section
+Implementation
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
 \begin_layout Standard
 \begin_inset Newpage newpage
 \end_inset
@@ -285,10 +336,76 @@ options "bibtotoc"
 
 \begin_layout Section
 \start_of_appendix
-Code
+Source Code
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Code"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../lpss.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, mfcc, spectro, fft_, autocorr, clip_segment, islocalmax, ms_to_samples},caption={Main script},label={main_script}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../func/spectro.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples},caption={Spectrogram plotting wrapper function},label={spectrogram_function}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../func/fft_.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Fast Fourier transform wrapper function},label={fft_function}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../func/autocorr.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Autocorrelation plotting wrapper function},label={autocorr_function}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../func/clip_segment.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Retrieve a segment of the original speech signal},label={clip_segment_function}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../func/ms_to_samples.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Transform time in milliseconds into the respective number of samples},label={clip_segment_function-1}"
 
 \end_inset
 
