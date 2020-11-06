@@ -268,8 +268,8 @@ Brief
 \begin_layout Standard
 The aim of this report is to demonstrate how digital signal processing technique
 s can be used to analyse, model and synthesise speech.
- The task will take will be considered as two areas of concern, that of
- modelling and synthesis.
+ The task will be considered as two areas of concern, that of modelling
+ and synthesis.
 \end_layout
 
 \begin_layout Standard
@@ -280,7 +280,7 @@ The modelling stage will utilise Linear Predictive Coding and the source-filter
  the original sound will be presented, the effect of different filter orders
  will also be demonstrated.
  Relevant parameters of the original vowel speech segment will be presented
- including the fundamental frequency and further formant frequencies.
+ including the fundamental frequency and formant frequencies.
 \end_layout
 
 \begin_layout Standard
@@ -296,8 +296,121 @@ d and analysed.
 Implementation
 \end_layout
 
+\begin_layout Standard
+The implementation of this system was completed using 
+\noun on
+Matlab
+\noun default
+ with aid from functions in the digital signal processing toolbox among
+ others.
+ Following loading a vowel sample, a segment of changing length (100ms was
+ standard) was clipped for processing.
+ The clip optionally also underwent pre-emphasis using a high pass filter.
+ As speech spectra can tend to have higher energy at lower frequencies,
+ the use of pre-emphasis can balance the magnitude across the spectrum.
+ A first order filter was used and the coefficient varied, over-use could
+ prove excessive for higher frequencies including fricative sounds.
+\end_layout
+
+\begin_layout Subsection
+Modelling
+\end_layout
+
+\begin_layout Standard
+In order to estimate the filter state of the vocal tract, the linear predictive
+ coding coefficients of varying orders were calculated using the 
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\ttfamily},tabsize=4"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+lpc(signal, order)
+\end_layout
+
+\end_inset
+
+ function.
+ In order to compare the frequency response of the LPC filter with the original
+ signal, the Fourier transform of the signal was calculated.
+ The frequency domain representation of the LPC filter was found using the
+ 
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\ttfamily},tabsize=4"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+freqz(b, a, n, f)
+\end_layout
+
+\end_inset
+
+ function and co-plotted with the original signal.
+ This frequency plot of the LPC filter constitutes the spectral envelope
+ of the signal and the vowel formant frequencies can be found at the maxima
+ of the spectrum.
+ Due to the smooth profile of the LPC spectrum, formant frequencies were
+ estimated by identifying the local maxima of the function.
+\end_layout
+
+\begin_layout Standard
+In order to find the fundamental frequency of the signal, the cepstrum was
+ used.
+ The use of a low pass filter was investigated in order to smooth the cepstrum
+ before programmatically finding pitch period candidates by applying 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ thresholds.
+\end_layout
+
+\begin_layout Subsection
+Synthesis
+\end_layout
+
+\begin_layout Standard
+In order to synthesise speech, a periodic impulse train at the identified
+ fundamental frequency of the original vowel was generated.
+ The impulse train was sampled at the same frequency as the original sound.
+\end_layout
+
 \begin_layout Section
 Results
+\end_layout
+
+\begin_layout Subsection
+LPC Filter
+\end_layout
+
+\begin_layout Subsubsection
+Order Variation
+\end_layout
+
+\begin_layout Subsection
+Spectral Analysis
+\end_layout
+
+\begin_layout Subsubsection
+Fundamental Frequency
+\end_layout
+
+\begin_layout Subsubsection
+Formant Frequencies
+\end_layout
+
+\begin_layout Subsubsection
+Cepstrum Smoothing
+\end_layout
+
+\begin_layout Subsection
+Synthesis
 \end_layout
 
 \begin_layout Section
@@ -347,11 +460,34 @@ name "sec:Code"
 \end_layout
 
 \begin_layout Standard
+While much of the code was developed in individual scripts in order to experimen
+t with separate aspects of the system, for collecting results a script which
+ constitutes the entire system was written, 
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+lpss.m
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../lpss.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, mfcc, spectro, fft_, autocorr, clip_segment, islocalmax, ms_to_samples},caption={Main script},label={main_script}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, mfcc, spectro, fft_, autocorr, clip_segment, islocalmax, ms_to_samples, rceps, cceps, ones, audioplayer, play, get_impulse_train, lpc},caption={Main script including source-filter model and spectral analysis},label={main_script}"
 
+\end_inset
+
+
+\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -394,7 +530,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/clip_segment.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Retrieve a segment of the original speech signal},label={clip_segment_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples},caption={Retrieve a segment of the original speech signal},label={clip_segment_function}"
 
 \end_inset
 
@@ -405,7 +541,18 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/ms_to_samples.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Transform time in milliseconds into the respective number of samples},label={clip_segment_function-1}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Transform time in milliseconds into the respective number of samples},label={ms_to_samples_function}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "../func/get_impulse_train.m"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples, repmat},caption={Generate an impulse rate of given fundamental frequency at a provided sampling frequency for a given length of time},label={get_impulse_train_function}"
 
 \end_inset
 

@@ -1,7 +1,7 @@
 function [cep_autocorr, cep_lags] = autocorr(signal, max_lags, time, Fs)
 
-[cep_autocorr, cep_lags] = xcorr(signal, max_lags, 'coeff');
-% [cep_autocorr, cep_lags] = xcorr(signal, 'coeff');
+% [cep_autocorr, cep_lags] = xcorr(signal, round(max_lags), 'coeff');
+[cep_autocorr, cep_lags] = xcorr(signal, 'coeff');
 
 if time
     cep_lags = 1000*cep_lags/Fs; % turn samples into ms

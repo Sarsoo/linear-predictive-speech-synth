@@ -9,30 +9,52 @@ SEGMENT_OFFSET = 0; % ms from start
 
 LPC_ORDER = 20;
 AC_DISP_SAMPLES = 1000; % autocorrelation display samples
-WINDOW_NUMBER = 10;
+WINDOW_NUMBER = 10; % number of windows for spectrogram
 WINDOW_OVERLAP = 5; % ms
+SYNTH_WINDOW_NUMBER = 100; % number of windows for spectrogram
+SYNTH_WINDOW_OVERLAP = 10; % ms
+
+PREEMPHASIS_COEFFS = [1 -0.8]; % first order zero coeff for pre-emphasis
 
 F0 = 60; % low-pitched male speech
 % F0 = 600; % children
 
 % flags for selective running
-FREQ_RESPONSE = ~false;
+PREEMPHASIS = false;
+CEPSTRUM_LOW_PASS = true; % smooth cepstrum for fund. freq. isolation
+CEPSTRUM_LOW_PASS_COEFFS = [1 -0.7];
+
+FREQ_RESPONSE = true;
 AUTOCORRELATION = false;
-CEPSTRUM_PLOT = false;
-CEPSTRUM_ONE_SIDED = true;
+
+CEPSTRUM_COMPLEX = false; % else real cepstrum
+CEPSTRUM_PLOT = true;
+CEPSTRUM_THRESHOLD = 0.075; % threshold for isolating peaks in cepstrum
+
 ORIG_LPC_T_COMPARE = false;
-ORIG_SPECTROGRAM = false;
+
+ORIG_SPECTROGRAM = true;
+SYNTH_SPECTROGRAM = true;
+
+SYNTHESISED_SOUND_LENGTH = 500; % ms
+
 PLAY = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% READ SIGNAL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[y, Fs] = audioread('samples/hood_m.wav');
+[y, Fs] = audioread('samples/head_f.wav');
+% take segment of sample for processing
 y = clip_segment(y, Fs, SEGMENT_LENGTH, SEGMENT_OFFSET);
+y_orig = y;
 
-L = length(y) % number of samples
+if PREEMPHASIS
+    y = filter(PREEMPHASIS_COEFFS, 1, y);
+end
 
-max_lag = Fs/ F0;
+L = length(y); % number of samples
+
+max_lag = Fs/ F0; % for autocorrelation
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% LPC
@@ -47,11 +69,10 @@ if ORIG_LPC_T_COMPARE
 x = 1:AC_DISP_SAMPLES;
 AC_DISP_SAMPLES = min([AC_DISP_SAMPLES L]);
 
+% plot t domain for original signal and estimation using LPC coeffs
+
 figure(1)
 plot(x, y(end-AC_DISP_SAMPLES+1:end), x, est_y(end-AC_DISP_SAMPLES+1:end), '--')
-
-% plot(x, y(end-DISPLAY_SAMPLES+1:end))
-% plot(x, est_y(end-DISPLAY_SAMPLES+1:end))
 
 grid
 xlabel('Sample Number')
@@ -62,12 +83,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% T DOMAIN PREDICTION ERROR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-t_domain_err = y - est_y;
+t_domain_err = y - est_y; % residual?
 
 if AUTOCORRELATION
 figure(2)
 [acs, lags] = autocorr(t_domain_err, max_lag, true, Fs);
-title('Autocorrelation for error in  Time domain')
+title('Autocorrelation of error in time domain')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,60 +113,114 @@ lpc_freq_plot = plot(filter_freqs, filter_vals_db, 'b');
 lpc_freq_plot.LineWidth = 2;
 
 % MAXIMA
+% estimate formant frequencies from maxima of LPC filter freq response
 maxima = islocalmax(filter_vals_db);
 maxima_freqs = filter_freqs(maxima)
-maxima_db = filter_vals_db(maxima)
+maxima_db = filter_vals_db(maxima);
 
 maxima_plot = plot(maxima_freqs, maxima_db, 'rx');
 maxima_plot.MarkerSize = 12;
 maxima_plot.LineWidth = 2;
+
+%% PRE_FILTER LPC
+if PREEMPHASIS
+    [prefilter_vals, prefilter_freqs] = freqz(1, lpc(y_orig, LPC_ORDER), length(freq_dom_freqs), Fs);
+
+    prefilter_plot = plot(prefilter_freqs, 20*log10(abs(prefilter_vals)), 'g');
+    prefilter_plot.Color(4) = 0.8;
+    prefilter_plot.LineWidth = 1;
+end
 
 %% PLOT
 hold off
 grid
 xlabel('Frequency (Hz)')
 ylabel('Magnitude (dB)')
-legend('Original Signal', 'LPC Filter', 'LPC Maxima')
+if PREEMPHASIS
+    legend('Original Signal', 'LPC Filter', 'LPC Maxima', 'LPC No Pre-emphasis')
+else
+    legend('Original Signal', 'LPC Filter', 'LPC Maxima')
+end
 title('Frequency Response For Speech Signal and LPC Filter')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CEPSTRUM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-cep = rceps(y);
-% cep = cceps(y);
+if CEPSTRUM_COMPLEX
+    cep = cceps(y);
+else
+    cep = rceps(y);
+end
+cep_filt = filter(1, CEPSTRUM_LOW_PASS_COEFFS, cep);
 
-if CEPSTRUM_PLOT
+if CEPSTRUM_PLOT % plot cepstrum in t domain
 ceps_t = (0:L - 1);
 
-figure(4)
-if CEPSTRUM_ONE_SIDED
-    plot(ceps_t(1:L / 2), cep(1:L / 2))
+if CEPSTRUM_LOW_PASS
+    c = cep_filt;
 else
-    plot(ceps_t(1:L), cep(1:L))
+    c = cep;
 end
+
+figure(4)
+hold on
+plot(ceps_t(1:round(L / 2)), c(1:round(L / 2)))
+
+%% MAXIMA 
+% value threshold
+c(c < CEPSTRUM_THRESHOLD) = 0;
+cep_maxima_indexes = islocalmax(c);
+
+cep_maxima_times = ceps_t(1:round(L / 2));
+cep_maxima_times = ceps_t(cep_maxima_indexes);
+c = c(cep_maxima_indexes);
+
+% quefrency threshold
+cep_time_indexes = 20 < cep_maxima_times;
+cep_maxima_times = cep_maxima_times(cep_time_indexes);
+c = c(cep_time_indexes);
+
+% 1st half
+cep_half_indexes = cep_maxima_times <= round(L / 2);
+cep_maxima_times = cep_maxima_times(cep_half_indexes);
+c = c(cep_half_indexes);
+
+maxima_plot = plot(cep_maxima_times, c, 'rx');
+maxima_plot.MarkerSize = 8;
+maxima_plot.LineWidth = 1.5;
 
 grid
 xlabel('Quefrency')
 ylabel('ceps(x[n])')
-if CEPSTRUM_ONE_SIDED
-    xlim([0 L / 2])
-    title('One-sided Speech Signal Cepstrum')
-else
-    xlim([0 L])
-    title('Speech Signal Cepstrum')
-end
-end
-
-%% AUTOCORRELATION
-if AUTOCORRELATION
-figure(5)
-[cep_autocorr, cep_lags] = autocorr(cep(1:L/2), max_lag, true, Fs);
-title('One-sided Cepstrum Autocorrelation')
+xlim([0 L / 2])
+title('Speech Signal Cepstrum')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% PLOT ORIGINAL SPECTROGRAM
+%% CALCULATE FUNDAMENTAL FREQUENCY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CEPSTRUM
+if CEPSTRUM_PLOT && length(cep_maxima_times) >= 1    
+    pitch_period = cep_maxima_times(c == max(c));
+    fundamental_freq = 1 / (pitch_period / Fs)
+else
+    disp('pitch periods not identified')
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% GENERATE SIGNAL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if exist('fundamental_freq')
+    excitation = get_impulse_train(fundamental_freq, Fs, SYNTHESISED_SOUND_LENGTH);
+
+    synth_sound = filter(1, a, excitation);
+    
+    audiowrite('out.wav', synth_sound, Fs);
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SPECTROGRAM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if ORIG_SPECTROGRAM
 figure(6)
@@ -154,9 +229,20 @@ colormap bone
 title('Speech Signal Spectrogram')
 end
 
+if SYNTH_SPECTROGRAM
+figure(7)
+spectro(synth_sound, Fs, SYNTH_WINDOW_NUMBER, SYNTH_WINDOW_OVERLAP);
+colormap bone
+title('Synthesised Vowel Sound Spectrogram')
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLAY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if PLAY
 sound(y, Fs);
+pause(1);
+if exist('synth_sound')
+    sound(synth_sound, Fs);
+end
 end
