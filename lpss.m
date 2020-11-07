@@ -5,16 +5,16 @@
 close all;clear all;clc;
 
 SEGMENT_LENGTH = 100; % ms
-SEGMENT_OFFSET = 0; % ms from start
+SEGMENT_OFFSET = 20; % ms from start
 
-LPC_ORDER = 20;
+LPC_ORDER = 25;
 AC_DISP_SAMPLES = 1000; % autocorrelation display samples
 WINDOW_NUMBER = 10; % number of windows for spectrogram
-WINDOW_OVERLAP = 5; % ms
-SYNTH_WINDOW_NUMBER = 100; % number of windows for spectrogram
-SYNTH_WINDOW_OVERLAP = 10; % ms
+WINDOW_OVERLAP = 10; % ms
+SYNTH_WINDOW_NUMBER = 60; % number of windows for spectrogram
+SYNTH_WINDOW_OVERLAP = 20; % ms
 
-PREEMPHASIS_COEFFS = [1 -0.8]; % first order zero coeff for pre-emphasis
+PREEMPHASIS_COEFFS = [1 -0.9]; % first order zero coeff for pre-emphasis
 
 F0 = 60; % low-pitched male speech
 % F0 = 600; % children
@@ -36,8 +36,9 @@ ORIG_LPC_T_COMPARE = false;
 ORIG_SPECTROGRAM = true;
 SYNTH_SPECTROGRAM = true;
 
-SYNTHESISED_SOUND_LENGTH = 500; % ms
+SYNTHESISED_SOUND_LENGTH = 1000; % ms
 
+WRITE = false;
 PLAY = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,7 +129,7 @@ if PREEMPHASIS
 
     prefilter_plot = plot(prefilter_freqs, 20*log10(abs(prefilter_vals)), 'g');
     prefilter_plot.Color(4) = 0.8;
-    prefilter_plot.LineWidth = 1;
+    prefilter_plot.LineWidth = 1.5;
 end
 
 %% PLOT
@@ -191,7 +192,7 @@ maxima_plot.MarkerSize = 8;
 maxima_plot.LineWidth = 1.5;
 
 grid
-xlabel('Quefrency')
+xlabel('Quefrency (samples)')
 ylabel('ceps(x[n])')
 xlim([0 L / 2])
 title('Speech Signal Cepstrum')
@@ -202,7 +203,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CEPSTRUM
 if CEPSTRUM_PLOT && length(cep_maxima_times) >= 1    
-    pitch_period = cep_maxima_times(c == max(c));
+    pitch_period = cep_maxima_times(c == max(c))
     fundamental_freq = 1 / (pitch_period / Fs)
 else
     disp('pitch periods not identified')
@@ -216,7 +217,9 @@ if exist('fundamental_freq')
 
     synth_sound = filter(1, a, excitation);
     
+    if WRITE
     audiowrite('out.wav', synth_sound, Fs);
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
