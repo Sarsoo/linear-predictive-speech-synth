@@ -4,10 +4,13 @@
 
 close all;clear all;clc;
 
+NAME = 'hood_m';
+% NAME = 'head_f';
+
 SEGMENT_LENGTH = 100; % ms
 SEGMENT_OFFSET = 20; % ms from start
 
-LPC_ORDER = 25;
+LPC_ORDER = 30;
 AC_DISP_SAMPLES = 1000; % autocorrelation display samples
 WINDOW_NUMBER = 10; % number of windows for spectrogram
 WINDOW_OVERLAP = 10; % ms
@@ -36,15 +39,15 @@ ORIG_LPC_T_COMPARE = false;
 ORIG_SPECTROGRAM = true;
 SYNTH_SPECTROGRAM = true;
 
-SYNTHESISED_SOUND_LENGTH = 1000; % ms
+SYNTHESISED_SOUND_LENGTH = 100; % ms
 
-WRITE = false;
-PLAY = false;
+WRITE = ~true;
+PLAY = ~false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% READ SIGNAL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[y, Fs] = audioread('samples/head_f.wav');
+[y, Fs] = audioread(strcat('samples/', NAME, '.wav'));
 % take segment of sample for processing
 y = clip_segment(y, Fs, SEGMENT_LENGTH, SEGMENT_OFFSET);
 y_orig = y;
@@ -75,7 +78,7 @@ AC_DISP_SAMPLES = min([AC_DISP_SAMPLES L]);
 figure(1)
 plot(x, y(end-AC_DISP_SAMPLES+1:end), x, est_y(end-AC_DISP_SAMPLES+1:end), '--')
 
-grid
+gridh
 xlabel('Sample Number')
 ylabel('Amplitude')
 legend('Original signal','LPC estimate')
@@ -171,9 +174,9 @@ plot(ceps_t(1:round(L / 2)), c(1:round(L / 2)))
 %% MAXIMA 
 % value threshold
 c(c < CEPSTRUM_THRESHOLD) = 0;
-cep_maxima_indexes = islocalmax(c);
 
-cep_maxima_times = ceps_t(1:round(L / 2));
+% local maxima
+cep_maxima_indexes = islocalmax(c);
 cep_maxima_times = ceps_t(cep_maxima_indexes);
 c = c(cep_maxima_indexes);
 
@@ -218,7 +221,7 @@ if exist('fundamental_freq')
     synth_sound = filter(1, a, excitation);
     
     if WRITE
-    audiowrite('out.wav', synth_sound, Fs);
+    audiowrite(strcat('synthed/', NAME, '_o', num2str(LPC_ORDER), '_', num2str(SEGMENT_LENGTH), '_', num2str(SEGMENT_OFFSET), 'ms.wav'), synth_sound, Fs);
     end
 end
 

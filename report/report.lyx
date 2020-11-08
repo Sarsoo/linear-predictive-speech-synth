@@ -181,7 +181,15 @@ University of Surrey
 \end_layout
 
 \begin_layout Abstract
-Abstract
+A system implementing the source-filter model of speech is presented and
+ evaluated using vowel segments as subjects.
+ Linear predictive coding is used to estimate the formant frequencies of
+ the samples while the cepstrum is used to identify the fundamental frequency.
+ Comparisons of the LPC filter spectrum with the original audio spectrum
+ are provided.
+ A periodic impulse train of the same pitch period is used to synthesise
+ vowel samples, a subjective analysis of the segment quality is given.
+ Evaluations of various parameter variations are also presented.
 \end_layout
 
 \begin_layout Standard
@@ -272,12 +280,19 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-The ability to process and analyse speech signals has facilitated developments
- throughout their use in the digital space with applications from data compressi
-on to speech recognition.
+Speech analysis and processing is an ever-expanding space with applications
+ from data compression to speech recognition.
+ The latter is a particularly relevant and popular area, presenting an important
+ domain for AI and machine learning applications.
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+Prior to these, however, the ability to analyse, transform and identify
+ key parameters for a speech signal are important tools that will be explored
+ herein.
+\end_layout
+
+\begin_layout Subsection
 Brief
 \end_layout
 
@@ -289,14 +304,37 @@ s can be used to analyse, model and synthesise speech.
 \end_layout
 
 \begin_layout Standard
-The modelling stage will utilise Linear Predictive Coding and the source-filter
- model of speech to construct an all-pole filter that acts similarly to
- the vocal tract's effect on sound produced by the vocal chords.
+The modelling stage will utilise Linear Predictive Coding
+\begin_inset CommandInset citation
+LatexCommand cite
+key "all-pole-resonance"
+literal "false"
+
+\end_inset
+
+ and the source-filter model of speech
+\begin_inset CommandInset citation
+LatexCommand cite
+key "source-filter-macquaire"
+literal "false"
+
+\end_inset
+
+ to construct an all-pole filter that acts similarly to the vocal tract's
+ effect on sound produced by the vocal chords.
  Comparisons of the frequency response for both the estimated filter and
  the original sound will be presented, the effect of different filter orders
  will also be demonstrated.
  Relevant parameters of the original vowel speech segment will be presented
- including the fundamental frequency and formant frequencies.
+ including the fundamental frequency
+\begin_inset CommandInset citation
+LatexCommand cite
+key "aalto-fundamental-freq"
+literal "false"
+
+\end_inset
+
+ and formant frequencies.
 \end_layout
 
 \begin_layout Standard
@@ -321,12 +359,7 @@ Matlab
  others.
  Following loading a vowel sample, a segment of given length (100ms was
  typical) was clipped for processing.
- The clip optionally also underwent pre-emphasis using a high pass filter.
- As speech spectra can tend to have higher energy at lower frequencies,
- the use of pre-emphasis can balance the magnitude across the spectrum.
- A first order filter was used and the coefficient varied, over-use could
- prove excessive for higher frequencies including fricative sounds.
- The majority of the investigations were conducted on two samples, 
+ The investigations were conducted on two samples, 
 \begin_inset listings
 lstparams "language=Matlab,basicstyle={\ttfamily},tabsize=4"
 inline true
@@ -403,12 +436,27 @@ freqz(b, a, n, f)
  of the signal and the vowel formant frequencies can be found at the maxima
  of the spectrum.
  The smooth profile of the LPC spectrum allowed the formant frequencies
- to be estimated by identifying the local maxima of the function.
+ to be estimated by identifying the local maxima
+\begin_inset CommandInset citation
+LatexCommand cite
+key "max-min,islocalmax"
+literal "false"
+
+\end_inset
+
+ of the function.
 \end_layout
 
 \begin_layout Standard
-In order to find the fundamental frequency of the signal, the cepstrum was
- used.
+In order to find the fundamental frequency of the signal, the cepstrum
+\begin_inset CommandInset citation
+LatexCommand cite
+key "quefrency"
+literal "false"
+
+\end_inset
+
+ was used.
  Regular periodic frequencies in the time domain present as a peak in the
  quefrency domain, this can also be achieved with an auto-corelation function.
  The use of a low-pass filter was investigated in order to smooth the cepstrum
@@ -434,7 +482,15 @@ islocalmax(x)
 
 \end_inset
 
- function.
+ function
+\begin_inset CommandInset citation
+LatexCommand cite
+key "islocalmax"
+literal "false"
+
+\end_inset
+
+.
  A minimum quefrency threshold of 20 was applied to ignore the transient-like
  oscillations at small 
 \begin_inset Formula $x$
@@ -446,7 +502,7 @@ islocalmax(x)
  sampled at 24kHz, a frequency higher than that of the fundamental frequency
  being investigated.
  Additionally a minimum cepstrum threshold of 0.075 was used, from here the
- maximum value was used as the pitch period.
+ quefrency candidate with the highest value was used as the pitch period.
 \end_layout
 
 \begin_layout Subsection
@@ -472,7 +528,15 @@ noprefix "false"
 .
  In order to produce the final synthesised speech, the generated impulse
  train must be convolved (in the time domain) with the transfer function
- of the LPC filter representing the vocal tract.
+ of the LPC filter representing the vocal tract
+\begin_inset CommandInset citation
+LatexCommand cite
+key "source-filter-macquaire"
+literal "false"
+
+\end_inset
+
+.
  In 
 \noun on
 Matlab
@@ -1572,7 +1636,7 @@ noprefix "false"
 
 \end_inset
 
-, where the order of the 
+, the order of the 
 \begin_inset listings
 lstparams "basicstyle={\ttfamily}"
 inline true
@@ -1650,6 +1714,19 @@ name "fig:Spectrum-Tile"
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Flex TODO Note (inline)
+status open
+
+\begin_layout Plain Layout
+segment length variation?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Spectral Analysis
 \end_layout
@@ -1659,9 +1736,8 @@ Formant Frequencies
 \end_layout
 
 \begin_layout Standard
-As described previously, the smooth profile of the LPC filter spectra makes
- the use of the local maxima of this curve reasonable estimations as to
- the peaks.
+As described previously, the smooth profile of the LPC filter spectra allows
+ the local maxima to be used as reasonable estimations of the peaks.
  The first three formants for the order 25 filters seen in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1892,7 +1968,7 @@ hood_m
 \begin_inset Text
 
 \begin_layout Plain Layout
-1,209
+1,209.0
 \end_layout
 
 \end_inset
@@ -2376,7 +2452,7 @@ noprefix "false"
 
 \end_inset
 
-.
+, [1 -0.7] were used as coefficients.
  When employing smoothing, the peak corresponding to the pitch period has
  been amplified compared to the unsmoothed curve where the pitch period
  does not reach far beyond the noise of the rest of the function.
@@ -2428,7 +2504,8 @@ head_f
 
 \end_inset
 
- with and without low-pass filtering, thresholded local maxima crossed
+ with and without low-pass filtering, thresholded local maxima crossed,
+ smoothing coefficients: [1 -0.7]
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:smoothed-cepstrum"
@@ -2713,70 +2790,6 @@ name "tab:fund-freq"
 
 \end_layout
 
-\begin_layout Subsubsection
-Pre-emphasis
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename ../resources/hood_m_spect_25_premph_0.9.png
-	lyxscale 20
-	width 80col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-LPC spectra for 
-\begin_inset listings
-lstparams "basicstyle={\ttfamily}"
-inline true
-status open
-
-\begin_layout Plain Layout
-
-hood_m
-\end_layout
-
-\end_inset
-
- following pre-emphasis using coefficients, [1 -0.9]
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pre-emph-spectrum"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Synthesis
 \end_layout
@@ -2796,8 +2809,8 @@ noprefix "false"
 .
  The circled areas highlight similar portions, the formant frequencies can
  be seen in both.
- Despite being quasi-stationary, variation can be seen in time for the original
- signal.
+ Despite being quasi-stationary, some variation in time can be seen for
+ the original signal.
  The stationary synthesised signal, however, has a flat profile in time.
 \end_layout
 
@@ -2850,25 +2863,86 @@ name "fig:Spectrograms-synth"
 
 \end_layout
 
+\begin_layout Standard
+At lower filter orders (< 10), the synthesised speech has a 
+\emph on
+buzzy
+\emph default
+ quality resembling a sawtooth wave of the same pitch as the original voice
+ sample.
+ At these orders, the synthesised sound can not accurately be discerned
+ as being speech.
+ As the filter order increases, the tone of the sound becomes less harsh
+ and by around order 20 the sample could be identified as being of a voice.
+ By order 40, much of the harsh tone has been smoothed and the sample subjective
+ly sounds as close to human speech as could be achieved.
+ Beyond this order, although the sound does change and smooth, it does not
+ appear to further approach the quality of the original sound.
+\end_layout
+
 \begin_layout Section
 Discussion
 \end_layout
 
 \begin_layout Standard
-\begin_inset Flex TODO Note (inline)
-status open
-
-\begin_layout Plain Layout
-do numbers on compression
+As presented, the order of the LPC filter is a critical parameter for audio
+ quality.
+ An order that is too low will not allow the filter to accurately map to
+ the desired vowel spectrum leaving a sound that, although at the right
+ pitch, does not appreciably sound like the source segment.
+ At the other end, increasing the order beyond a certain complexity can
+ result in diminishing returns.
+ Although the sound sounded smoother, beyond around order 40 it did not
+ noticeably further approach the original sound.
+ Subjectively, an order of 30 provided a good approximation of the input
+ sound with acceptable quality for low bandwidth transmission.
 \end_layout
+
+\begin_layout Standard
+The use of low-pass filtering on the cepstrum when identifying the fundamental
+ frequency was effective in accentuating the peak corresponding to the pitch
+ period.
+ With this, a higher 
+\begin_inset Formula $y$
+\end_inset
+
+ threshold could be used that would be further from the noise of the function
+ while still consistently identifying the correct peak.
+\end_layout
+
+\begin_layout Standard
+A 100ms vowel segment sampled at 24kHz totals to 2,400 samples.
+ Assuming that each is represented by a float of 4 bytes, this uncompressed
+ vowel segment would fill 9600 bytes of storage.
+ Encoding the same 100ms of information via LPC using an order 30 filter
+ could reduce this to 120 bytes, just 1% of the previous space.
+ This is particularly important for audio transmission such as in mobile
+ telecoms, the GSM standard uses codecs based on LPC
+\begin_inset CommandInset citation
+LatexCommand cite
+key "etsi-gsm"
+literal "false"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Section
 Conclusion
+\end_layout
+
+\begin_layout Standard
+Within this work, a complete source-filter model of speech has been presented,
+ analysing vowel samples and re-synthesising them while compressing the
+ data representation.
+ The effect of changing the complexity of this representation was investigated
+ by varying the order of the LPC filter and describing the effect on the
+ final audio sample.
+ Various statistics about the original samples were calculated including
+ the formant frequencies and the fundamental frequency.
+ With a sufficient filter order, sound samples comparable to the originals
+ were generated.
 \end_layout
 
 \begin_layout Standard
@@ -2892,6 +2966,10 @@ btprint "btPrintCited"
 bibfiles "references"
 options "bibtotoc"
 
+\end_inset
+
+
+\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -2936,12 +3014,8 @@ Additional helper functions were written to plot and manipulate data.
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../lpss.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, mfcc, spectro, fft_, autocorr, clip_segment, islocalmax, ms_to_samples, rceps, cceps, ones, audioplayer, play, get_impulse_train, lpc},caption={Main script including source-filter model and spectral analysis},label={main_script}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, mfcc, spectro, fft_, autocorr, clip_segment, islocalmax, ms_to_samples, rceps, cceps, ones, audioplayer, play, get_impulse_train, lpc, strcat, num2str, xlim},caption={Main script including source-filter model and spectral analysis},label={main_script}"
 
-\end_inset
-
-
-\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -2951,7 +3025,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/spectro.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples},caption={Spectrogram plotting wrapper function},label={spectrogram_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples, xlim},caption={Spectrogram plotting wrapper function},label={spectrogram_function}"
 
 \end_inset
 
@@ -2962,7 +3036,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/fft_.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Fast Fourier transform wrapper function},label={fft_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, xlim},caption={Fast Fourier transform wrapper function},label={fft_function}"
 
 \end_inset
 
@@ -2973,7 +3047,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/autocorr.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Autocorrelation plotting wrapper function},label={autocorr_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, xlim},caption={Autocorrelation plotting wrapper function},label={autocorr_function}"
 
 \end_inset
 
@@ -2984,7 +3058,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/clip_segment.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples},caption={Retrieve a segment of the original speech signal},label={clip_segment_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples, xlim},caption={Retrieve a segment of the original speech signal},label={clip_segment_function}"
 
 \end_inset
 
@@ -2995,7 +3069,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/ms_to_samples.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram},caption={Transform time in milliseconds into the respective number of samples},label={ms_to_samples_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, xlim},caption={Transform time in milliseconds into the respective number of samples},label={ms_to_samples_function}"
 
 \end_inset
 
@@ -3006,7 +3080,7 @@ lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},comm
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "../func/get_impulse_train.m"
-lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples, repmat},caption={Generate an impulse rate of given fundamental frequency at a provided sampling frequency for a given length of time},label={get_impulse_train_function}"
+lstparams "breaklines=true,frame=tb,language=Matlab,basicstyle={\\ttfamily},commentstyle={\\color{commentgreen}\\itshape},keywordstyle={\\color{blue}},emphstyle={\\color{red}},stringstyle={\\color{red}},identifierstyle={\\color{cyan}},morekeywords={audioread, aryule, xcorr, freqz, spectrogram, ms_to_samples, repmat, xlim},caption={Generate an impulse rate of given fundamental frequency at a provided sampling frequency for a given length of time},label={get_impulse_train_function}"
 
 \end_inset
 
