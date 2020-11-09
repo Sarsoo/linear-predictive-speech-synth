@@ -457,8 +457,9 @@ literal "false"
 \end_inset
 
  was used.
- Regular periodic frequencies in the time domain present as a peak in the
- quefrency domain, this can also be achieved with an auto-corelation function.
+ Regular periodic frequencies in the time domain present as peaks in the
+ quefrency domain, these can also be identified with an auto-corelation
+ function.
  The use of a low-pass filter was investigated in order to smooth the cepstrum
  before programmatically finding pitch period candidates by applying 
 \begin_inset Formula $x$
@@ -499,8 +500,8 @@ literal "false"
  values.
  Lowering the quefrency corresponds to an increase in frequency, thus it
  is reasonable to discard these values when 20 samples represents 1200Hz
- sampled at 24kHz, a frequency higher than that of the fundamental frequency
- being investigated.
+ when sampled at 24kHz, a frequency higher than that of the fundamental
+ frequency being investigated.
  Additionally a minimum cepstrum threshold of 0.075 was used, from here the
  quefrency candidate with the highest value was used as the pitch period.
 \end_layout
@@ -584,8 +585,8 @@ noprefix "false"
 \end_inset
 
 .
- The frequency response for the filters these coefficients represent can
- be seen in figure 
+ The frequency response for similar filters of order 25 can be seen in figure
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:stacked-spectra"
@@ -1447,7 +1448,8 @@ hood_m
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Order 20 LPC coefficients for both investigated samples
+Order 20 LPC coefficients for both investigated samples, source segments
+ taken from the first 100ms of each vowel sample
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Order-20-LPC-Coeffs"
@@ -1598,8 +1600,8 @@ name "fig:stacked-spectra"
 \end_layout
 
 \begin_layout Standard
-As the spectra are plotted with the same frequency bounds, the peaks of
- the filter response corresponding to estimations of the formant frequencies
+As the spectra are plotted with the same frequency axes bounds, the peaks
+ of the filter response corresponding to estimations of the formant frequencies
  can be compared between the male and females voice.
  In general the male's formant frequencies are lower than for the female's
  sample, this can be seen specifically with the first few peaks.
@@ -1714,12 +1716,103 @@ name "fig:Spectrum-Tile"
 
 \end_layout
 
+\begin_layout Subsubsection
+Source Segment Length Variation
+\end_layout
+
 \begin_layout Standard
-\begin_inset Flex TODO Note (inline)
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:seg_length"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ presents the speech sample and LPC filter spectral response for different
+ source sample lengths.
+ As the source sample length increases the spectral profile becomes less
+ smooth with higher peaks and deeper troughs throughout.
+ Additionally the mid to higher frequencies are affected more, the first
+ few formants are less affected.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-segment length variation?
+\noindent
+\align center
+\begin_inset Graphics
+	filename /mnt/files/dev/matlab/lpss/resources/hood_m_25spect.png
+	lyxscale 10
+	width 25col%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /mnt/files/dev/matlab/lpss/resources/hood_m_50spect.png
+	lyxscale 10
+	width 25col%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /mnt/files/dev/matlab/lpss/resources/hood_m_100spect.png
+	lyxscale 10
+	width 25col%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /mnt/files/dev/matlab/lpss/resources/hood_m_200spect.png
+	lyxscale 10
+	width 25col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Increasing source segment lengths for the 
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+hood_m
+\end_layout
+
+\end_inset
+
+ sample
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:seg_length"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1775,7 +1868,7 @@ head_f
 \begin_inset Formula $f_{1}$
 \end_inset
 
- as it did not refer to a peak in the way that would indicate a formant.
+ as it did not refer to a maximum that would indicate a formant.
 \end_layout
 
 \begin_layout Standard
@@ -2456,8 +2549,8 @@ noprefix "false"
  When employing smoothing, the peak corresponding to the pitch period has
  been amplified compared to the unsmoothed curve where the pitch period
  does not reach far beyond the noise of the rest of the function.
- Following this, smoothing was employed when identifying the fundamental
- frequency.
+ As a result of this, smoothing was employed in the following when identifying
+ the fundamental frequency.
 \end_layout
 
 \begin_layout Standard
@@ -2544,8 +2637,8 @@ noprefix "false"
 \end_inset
 
 .
- The identified pitch period, 
-\begin_inset Formula $t_{p}$
+ The identified quefrency pitch period, 
+\begin_inset Formula $q_{p}$
 \end_inset
 
 , and the corresponding fundamental frequency, 
@@ -2577,7 +2670,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Formula 
 \[
-f_{f}=\frac{1}{\nicefrac{t_{p}}{f_{s}}}
+f_{f}=\frac{1}{\nicefrac{q_{p}}{f_{s}}}
 \]
 
 \end_inset
@@ -2795,8 +2888,8 @@ Synthesis
 \end_layout
 
 \begin_layout Standard
-Following the convolution of the impulse train and the LPC filter, the synthesis
-ed sound and the original can be seen presented in figure 
+Following the convolution of the impulse train and the LPC filter, the spectrogr
+ams for the original and synthesised sound can be seen in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Spectrograms-synth"
@@ -2808,8 +2901,8 @@ noprefix "false"
 
 .
  The circled areas highlight similar portions, the formant frequencies can
- be seen in both.
- Despite being quasi-stationary, some variation in time can be seen for
+ be seen as bright horizontal lines in both.
+ Despite being quasi-stationary, some variation in time can be seen throughout
  the original signal.
  The stationary synthesised signal, however, has a flat profile in time.
 \end_layout
@@ -2871,7 +2964,7 @@ buzzy
  quality resembling a sawtooth wave of the same pitch as the original voice
  sample.
  At these orders, the synthesised sound can not accurately be discerned
- as being speech.
+ as speech.
  As the filter order increases, the tone of the sound becomes less harsh
  and by around order 20 the sample could be identified as being of a voice.
  By order 40, much of the harsh tone has been smoothed and the sample subjective
@@ -2911,6 +3004,16 @@ The use of low-pass filtering on the cepstrum when identifying the fundamental
 \end_layout
 
 \begin_layout Standard
+The relative frequencies for male and female speech was as expected with
+ the male speech segment having both lower fundamental frequencies and formant
+ frequencies.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 A 100ms vowel segment sampled at 24kHz totals to 2,400 samples.
  Assuming that each is represented by a float of 4 bytes, this uncompressed
  vowel segment would fill 9600 bytes of storage.
@@ -2928,6 +3031,11 @@ literal "false"
 .
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Conclusion
 \end_layout
@@ -2941,7 +3049,7 @@ Within this work, a complete source-filter model of speech has been presented,
  final audio sample.
  Various statistics about the original samples were calculated including
  the formant frequencies and the fundamental frequency.
- With a sufficient filter order, sound samples comparable to the originals
+ With a sufficient filter order, sound samples comparable to human speech
  were generated.
 \end_layout
 
